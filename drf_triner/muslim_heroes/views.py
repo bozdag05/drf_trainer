@@ -1,25 +1,39 @@
 from django.shortcuts import render
-from rest_framework import generics, serializers
+from rest_framework import generics, serializers, viewsets
+from rest_framework.permissions import *
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from .models import Heroes
+from .permissions import IsAdminOrReadOnly, IsAuthorAdminOrReadOnly
+from .models import Heroes, Category, Gender
 from .serializers import HeroesSerializer
 
+
+# class HeroesViewSet(viewsets.ModelViewSet):
+#     queryset = Heroes.objects.all()
+#     serializer_class = HeroesSerializer
+#
+#     @action(methods=["get"], detail=True)
+#     def categories(self, request, pk=None):
+#         categories = Category.objects.get(pk=pk)
+#         return Response({"categories": categories.title})
 
 class HeroesAPIViewList(generics.ListCreateAPIView):
     queryset = Heroes.objects.all()
     serializer_class = HeroesSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, )
 
 
-class HeroesAPIViewUpdate(generics.UpdateAPIView):
+class HeroesAPIViewUpdate(generics.RetrieveUpdateAPIView):
     queryset = Heroes.objects.all()
     serializer_class = HeroesSerializer
+    permission_classes = (IsAuthorAdminOrReadOnly, )
 
 
-class HeroesAPIViewCRUD(generics.RetrieveUpdateDestroyAPIView):
+class HeroesAPIViewDestroy(generics.RetrieveDestroyAPIView):
     queryset = Heroes.objects.all()
     serializer_class = HeroesSerializer
+    permission_classes = (IsAdminOrReadOnly, )
 
 # class HeroesAPIView(APIView):
 #     def get(self, request):

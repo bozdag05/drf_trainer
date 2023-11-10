@@ -3,6 +3,7 @@ from .models import Heroes
 
 
 class HeroesSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     class Meta:
         model = Heroes
         fields = "__all__"
