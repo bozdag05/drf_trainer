@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics, serializers, viewsets
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import *
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -18,10 +20,17 @@ from .serializers import HeroesSerializer
 #         categories = Category.objects.get(pk=pk)
 #         return Response({"categories": categories.title})
 
+class PaginationAPIList(PageNumberPagination):
+    page_size = 3
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+
 class HeroesAPIViewList(generics.ListCreateAPIView):
     queryset = Heroes.objects.all()
     serializer_class = HeroesSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, )
+    pagination_class = PaginationAPIList
 
 
 class HeroesAPIViewUpdate(generics.RetrieveUpdateAPIView):
@@ -34,6 +43,7 @@ class HeroesAPIViewDestroy(generics.RetrieveDestroyAPIView):
     queryset = Heroes.objects.all()
     serializer_class = HeroesSerializer
     permission_classes = (IsAdminOrReadOnly, )
+    # authentication_classes = (TokenAuthentication, )
 
 # class HeroesAPIView(APIView):
 #     def get(self, request):
